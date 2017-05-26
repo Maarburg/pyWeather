@@ -1,0 +1,46 @@
+import requests,sys
+
+if len(sys.argv) > 2:
+	#get City and State from Command Line
+	city  = sys.argv[1]
+	state  = sys.argv[2]
+else:
+	city = input("what city would you like the weather for? ")
+	state = input("What state would you like the weather for? (2 letter, ie NV for Nevada)")
+"""Returns base data for API function calls of 'city' and 'state'"""
+
+def get_weather_report(city, state):
+	weather_data_points = ['observation_time', 'weather', 'temperature_string', 'relative_humidity', 'wind_gust_mph']
+	#might want to do imput validate for the state
+	
+	weather_request = requests.get('http://api.wunderground.com/api/6578b1c864b1cd8b/conditions/q/' + state + '/' + city + '.json')
+	weather_results = weather_request.json()
+	output_dict = {}
+	for k,v in weather_results['current_observation'].items():
+		if k in weather_data_points:
+			output_dict[k]=v
+	city = weather_results['current_observation']['display_location']['city']
+	print("Here's your weather report for", city,':')
+	for k,v in output_dict.items():
+		print(k,': ',v)
+	return;	
+
+get_weather_report(city, state)
+
+## Get forecast data
+"""
+def get_forecast_report(city, state):
+	forecast_data = ['period','title', 'fcttext']
+	forecast_request = requests.get('http://api.wunderground.com/api/6578b1c864b1cd8b/forecast/q/' + state + '/' + city + '.json')
+	forecast_results = forecast_request.json()
+	output_dict = {}
+	for k,v in forecast_results['forecast']['simpleforecast']['forecastday'].itmes():
+			if k in forecast_data:
+				output_dict[k]=v
+	print("Here's your forecast report for", city,':')
+	for k.v in output_dict.items():
+		print(k,': ',v)
+	return;
+	
+get_forecast_report(city, state)
+"""
